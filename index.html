@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mach Net VPN</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <style>
+        /* --- RESET & FONTS --- */
+        :root {
+            --bg-color: #0f172a; /* Slate 900 */
+            --card-bg: rgba(30, 41, 59, 0.7); /* Slate 800 полупрозрачный */
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --accent-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6); /* Blue to Purple */
+            --success: #10b981;
+            --danger: #ef4444;
+            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at top center, #1e293b 0%, #0f172a 70%);
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* --- HEADER --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .brand {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand h1 {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .brand span {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .status-badge {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .status-badge.expired {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        /* --- DASHBOARD GRID --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-icon {
+            font-size: 18px;
+            color: #60a5fa; /* Light blue */
+            margin-bottom: 4px;
+        }
+
+        .card-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .card-value {
+            font-size: 16px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* --- ACTIONS --- */
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 16px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: white;
+            width: 100%;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-gradient {
+            background: var(--accent-gradient);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        /* --- EXTRA LIST --- */
+        .extra-list {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            overflow: hidden;
+        }
+
+        .list-item {
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--card-border);
+            cursor: pointer;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+        }
+
+        .icon-box {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        /* --- FOOTER MENU --- */
+        .footer-menu {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: auto;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            <h1>Mach Net ✈️</h1>
+            <span>Махнул, и все запреты сняло</span>
+        </div>
+        <div id="statusBadge" class="status-badge">
+            <i class="fa-solid fa-check-circle"></i> Активна
+        </div>
+    </header>
+
+    <section class="dashboard-grid">
+        <div class="card">
+            <i class="fa-solid fa-user card-icon"></i>
+            <span class="card-label">Пользователь</span>
+            <span class="card-value" id="userName">Загрузка...</span>
+        </div>
+        <div class="card">
+            <i class="fa-solid fa-mobile-screen card-icon"></i>
+            <span class="card-label">Устройства</span>
+            <span class="card-value">3 / 5</span>
+        </div>
+        <div class="card">
+            <i class="fa-regular fa-calendar card-icon"></i>
+            <span class="card-label">Действует до</span>
+            <span class="card-value">16 Фев 2026</span>
+        </div>
+        <div class="card">
+            <i class="fa-solid fa-hourglass-half card-icon"></i>
+            <span class="card-label">Осталось</span>
+            <span class="card-value">31 день</span>
+        </div>
+    </section>
+
+    <section class="actions">
+        <button class="btn btn-primary" onclick="showConnectInfo()">
+            <i class="fa-solid fa-rocket"></i> Подключиться
+        </button>
+        <button class="btn btn-gradient" onclick="extendSub()">
+            <i class="fa-solid fa-credit-card"></i> Продлить подписку
+        </button>
+    </section>
+
+    <section class="extra-list">
+        <div class="list-item">
+            <div class="list-item-left">
+                <div class="icon-box" style="color: #ff0000;"><i class="fa-brands fa-youtube"></i></div>
+                YouTube без рекламы
+            </div>
+            <i class="fa-solid fa-chevron-right" style="color: var(--text-secondary); font-size: 12px;"></i>
+        </div>
+        <div class="list-item">
+            <div class="list-item-left">
+                <div class="icon-box" style="color: #10b981;"><i class="fa-solid fa-gauge-high"></i></div>
+                Измерить скорость
+            </div>
+            <i class="fa-solid fa-chevron-right" style="color: var(--text-secondary); font-size: 12px;"></i>
+        </div>
+    </section>
+
+    <div class="footer-menu">
+        <button class="btn btn-secondary">
+            <i class="fa-solid fa-gift"></i> Бонусы
+        </button>
+        <button class="btn btn-secondary">
+            <i class="fa-solid fa-circle-info"></i> Помощь
+        </button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+
+        // Инициализация
+        tg.ready();
+        tg.expand(); // Раскрыть на весь экран
+
+        // Настройка цветов под тему пользователя (если нужно, но мы форсируем темную тему)
+        // tg.setHeaderColor('#0f172a'); 
+
+        // Получение данных пользователя
+        const user = tg.initDataUnsafe.user;
+        
+        if (user) {
+            document.getElementById('userName').innerText = user.first_name || 'Pilot';
+        } else {
+            document.getElementById('userName').innerText = 'Ghost Pilot';
+        }
+
+        // Логика кнопок
+        function showConnectInfo() {
+            tg.showPopup({
+                title: 'На взлет! ✈️',
+                message: 'Ваш ключ доступа скопирован в буфер обмена (симуляция). Вставьте его в V2Ray клиент.',
+                buttons: [{type: 'ok', text: 'Понял'}]
+            });
+        }
+
+        function extendSub() {
+            // Отправляем данные обратно в бота
+            // tg.sendData(JSON.stringify({action: 'extend_subscription'}));
+            
+            // Или открываем внешнюю ссылку (например, на оплату)
+            tg.showPopup({
+                title: 'Продление',
+                message: 'Переходим к оплате...',
+                buttons: [{type: 'ok', text: 'Ок'}]
+            }, function() {
+                // Тут можно закрыть окно или сделать редирект
+                // tg.close();
+            });
+        }
+    </script>
+</body>
+</html>
