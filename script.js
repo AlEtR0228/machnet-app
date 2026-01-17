@@ -6,7 +6,7 @@ tg.expand();
 
 // ⚠️ СЮДА ПОТОМ ВСТАВИШЬ ДОМЕН ОТ RAILWAY (например https://app.railway.app/api/user)
 // Пока оставь как есть, я скажу когда менять.
-const API_BASE = "ПЛЕЙСХОЛДЕР_ДЛЯ_ДОМЕНА"; 
+const API_BASE = "https://machnetbot-production.up.railway.app/"; 
 
 const user = tg.initDataUnsafe.user;
 
@@ -98,3 +98,4 @@ function extendSub() {
 
 function openFeature(name) { tg.showAlert(`Скоро: ${name}`); }
 function openHelp() { tg.openLink('https://t.me/machnet'); }
+
