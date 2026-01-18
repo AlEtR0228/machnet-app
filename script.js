@@ -4,12 +4,14 @@ const tg = window.Telegram.WebApp;
 tg.ready();
 tg.expand(); 
 
-// ⚠️ СЮДА ПОТОМ ВСТАВИШЬ ДОМЕН ОТ RAILWAY (например https://app.railway.app/api/user)
-// Пока оставь как есть, я скажу когда менять.
+// ⚠️ ЗАМЕНИ ЭТО НА ТВОЮ ССЫЛКУ ИЗ RAILWAY
+// Она должна быть вида: https://xxxx-xxxx.up.railway.app/api/user
 const API_BASE = "https://machnetbot-production.up.railway.app/"; 
 
 const user = tg.initDataUnsafe.user;
+let globalAccessKey = ""; // Сюда сохраним ключ
 
+// --- ЗАГРУЗКА ДАННЫХ ПРИ СТАРТЕ ---
 async function loadUserData() {
     if (!user) {
         document.getElementById('userName').innerText = 'Ghost Pilot';
@@ -17,43 +19,51 @@ async function loadUserData() {
     }
     document.getElementById('userName').innerText = user.first_name;
 
-    // Если мы еще не поменяли домен в коде, не стучимся
-    if (API_BASE.includes("ПЛЕЙСХОЛДЕР")) {
-        console.log("Домен API еще не настроен");
-        return;
-    }
-
     try {
         const dateEl = document.getElementById('expiryDate');
         if(dateEl) dateEl.innerText = "Связь...";
 
+        // Запрос к боту
         const response = await fetch(`${API_BASE}/${user.id}`);
-        if (!response.ok) throw new Error("Network error");
+        
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
         
         const data = await response.json();
         
-        if (data.error) return;
-
-        if (data.username) document.getElementById('userName').innerText = data.username;
-
-        const expiryTimestamp = data.expiry;
-        const now = Math.floor(Date.now() / 1000);
-        
-        // Дата
-        let dateStr = "Не активна";
-        if (expiryTimestamp > 0) {
-            const dateObj = new Date(expiryTimestamp * 1000);
-            dateStr = dateObj.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+        if (data.error) {
+            console.error("API Error:", data.error);
+            return;
         }
 
-        // Дни
-        let daysLeft = Math.ceil((expiryTimestamp - now) / 86400);
-        if (daysLeft < 0) daysLeft = 0;
+        // 1. Сохраняем полученный ключ
+        globalAccessKey = data.access_key || "";
 
+        // 2. Обновляем Имя
+        if (data.username) document.getElementById('userName').innerText = data.username;
+
+        // 3. Считаем даты
+        const now = Math.floor(Date.now() / 1000);
+        let dateStr = "Не активна";
+        let daysLeft = 0;
+
+        if (data.expiry > 0) {
+            const dateObj = new Date(data.expiry * 1000);
+            dateStr = dateObj.toLocaleDateString('ru-RU', { 
+                day: 'numeric', month: 'long', year: 'numeric' 
+            });
+            daysLeft = Math.ceil((data.expiry - now) / 86400);
+            if (daysLeft < 0) daysLeft = 0;
+        }
+
+        // 4. Обновляем интерфейс
         updateDashboard(dateStr, daysLeft, data.is_active);
 
     } catch (e) {
-        console.error("Offline:", e);
+        console.error("Offline / Error:", e);
+        document.getElementById('expiryDate').innerText = "-";
+        tg.showAlert("Ошибка связи с сервером. Проверьте интернет.");
     }
 }
 
@@ -74,28 +84,60 @@ function updateDashboard(dateStr, daysLeft, isActive) {
     }
 }
 
-loadUserData();
-
-// --- КНОПКИ (СТАНДАРТНЫЕ) ---
+// --- НОВАЯ ЛОГИКА КНОПКИ "ПОДКЛЮЧИТЬСЯ" ---
 function showConnectInfo() {
     if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-    tg.showPopup({
-        title: 'Получение ключа',
-        message: 'Прислать конфиг в чат?',
-        buttons: [{id: 'yes', type: 'default', text: 'Да'}, {type: 'cancel', text: 'Нет'}]
-    }, function(btnId) {
-        if (btnId === 'yes') {
-            tg.sendData(JSON.stringify({action: 'get_config'}));
-            tg.close();
-        }
+
+    // Если ключа нет или он пустой
+    if (!globalAccessKey) {
+        tg.showAlert("Подписка не найдена или истекла. Продлите доступ!");
+        return;
+    }
+
+    // Вставляем ключ в поле внутри модалки
+    document.getElementById('vpnKeyInput').value = globalAccessKey;
+    
+    // Показываем модалку
+    document.getElementById('keyModal').classList.add('active');
+}
+
+// --- ФУНКЦИИ МОДАЛЬНОГО ОКНА ---
+function closeModal() {
+    document.getElementById('keyModal').classList.remove('active');
+}
+
+function copyKey() {
+    const input = document.getElementById('vpnKeyInput');
+    
+    // Выделяем текст (важно для мобильных)
+    input.select();
+    input.setSelectionRange(0, 99999); 
+
+    navigator.clipboard.writeText(input.value).then(() => {
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+        tg.showAlert("Ключ скопирован! Вставьте его в V2RayNG.");
+        closeModal();
+    }).catch(err => {
+        console.error('Ошибка копирования:', err);
+        tg.showAlert("Не удалось скопировать автоматически. Скопируйте вручную.");
     });
 }
 
+// --- ОСТАЛЬНЫЕ КНОПКИ ---
 function extendSub() {
     if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     tg.sendData(JSON.stringify({action: 'extend_subscription'}));
 }
 
-function openFeature(name) { tg.showAlert(`Скоро: ${name}`); }
-function openHelp() { tg.openLink('https://t.me/machnet'); }
+function openFeature(name) { 
+    if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
+    tg.showAlert(`Функция "${name}" скоро будет доступна!`); 
+}
 
+function openHelp() { 
+    if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
+    tg.openLink('https://t.me/machnet'); 
+}
+
+// Запускаем загрузку данных сразу
+loadUserData();
