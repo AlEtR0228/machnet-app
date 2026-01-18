@@ -6,9 +6,7 @@
     <title>Mach Net VPN</title>
     
     <link rel="stylesheet" href="style.css">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
@@ -32,17 +30,17 @@
         <div class="card">
             <i class="fa-solid fa-mobile-screen card-icon"></i>
             <span class="card-label">Устройства</span>
-            <span class="card-value">3 / 5</span>
+            <span class="card-value">5 / 5</span>
         </div>
         <div class="card">
             <i class="fa-regular fa-calendar card-icon"></i>
             <span class="card-label">Действует до</span>
-            <span class="card-value">16 Фев 2026</span>
+            <span class="card-value" id="expiryDate">...</span>
         </div>
         <div class="card">
             <i class="fa-solid fa-hourglass-half card-icon"></i>
             <span class="card-label">Осталось</span>
-            <span class="card-value">31 день</span>
+            <span class="card-value" id="daysLeft">...</span>
         </div>
     </section>
 
@@ -79,6 +77,30 @@
         <button class="btn btn-secondary" onclick="openHelp()">
             <i class="fa-solid fa-circle-info"></i> Помощь
         </button>
+    </div>
+
+    <div id="keyModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Твой ключ доступа</h3>
+                <button class="close-btn" onclick="closeModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <p class="modal-desc">Скопируй этот ключ и вставь его в приложение V2RayNG (Android) или V2Box (iOS).</p>
+            
+            <div class="key-container">
+                <input type="text" id="vpnKeyInput" readonly value="Загрузка ключа...">
+                <button class="copy-btn" onclick="copyKey()">
+                    <i class="fa-regular fa-copy"></i>
+                </button>
+            </div>
+
+            <button class="btn btn-primary" onclick="closeModal()" style="margin-top: 15px;">
+                Отлично, закрыть
+            </button>
+        </div>
     </div>
 
     <script src="script.js"></script>
