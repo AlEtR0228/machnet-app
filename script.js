@@ -6,7 +6,7 @@ tg.expand();
 
 // ⚠️ ЗАМЕНИ ЭТО НА ТВОЮ ССЫЛКУ ИЗ RAILWAY
 // Она должна быть вида: https://xxxx-xxxx.up.railway.app/api/user
-const API_BASE = "https://machnetbot-production.up.railway.app/"; 
+const API_BASE = "https://machnetbot-production.up.railway.app/api/user";
 
 const user = tg.initDataUnsafe.user;
 let globalAccessKey = ""; // Сюда сохраним ключ
@@ -141,3 +141,4 @@ function openHelp() {
 
 // Запускаем загрузку данных сразу
 loadUserData();
+
