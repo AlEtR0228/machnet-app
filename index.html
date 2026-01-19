@@ -3,107 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mach Net VPN</title>
-    
+    <title>Mach Net</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-
-    <header>
-        <div class="brand">
-            <h1>Mach Net ✈️</h1>
-            <span>Махнул, и все запреты сняло</span>
-        </div>
-        <div id="statusBadge" class="status-badge">
-            <i class="fa-solid fa-check-circle"></i> Активна
-        </div>
-    </header>
-
-    <section class="dashboard-grid">
-        <div class="card">
-            <i class="fa-solid fa-user card-icon"></i>
-            <span class="card-label">Пользователь</span>
-            <span class="card-value" id="userName">Загрузка...</span>
-        </div>
-        <div class="card">
-            <i class="fa-solid fa-mobile-screen card-icon"></i>
-            <span class="card-label">Устройства</span>
-            <span class="card-value">5 / 5</span>
-        </div>
-        <div class="card">
-            <i class="fa-regular fa-calendar card-icon"></i>
-            <span class="card-label">Действует до</span>
-            <span class="card-value" id="expiryDate">...</span>
-        </div>
-        <div class="card">
-            <i class="fa-solid fa-hourglass-half card-icon"></i>
-            <span class="card-label">Осталось</span>
-            <span class="card-value" id="daysLeft">...</span>
-        </div>
-    </section>
-
-    <section class="actions">
-        <button class="btn btn-primary" onclick="showConnectInfo()">
-            <i class="fa-solid fa-rocket"></i> Подключиться
-        </button>
-        <button class="btn btn-gradient" onclick="extendSub()">
-            <i class="fa-solid fa-credit-card"></i> Продлить подписку
-        </button>
-    </section>
-
-    <section class="extra-list">
-        <div class="list-item" onclick="openFeature('YouTube без рекламы')">
-            <div class="list-item-left">
-                <div class="icon-box" style="color: #ff0000;"><i class="fa-brands fa-youtube"></i></div>
-                YouTube без рекламы
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">✈️</div>
+                <div class="logo-text">
+                    <span class="brand">MACH NET</span>
+                    <span class="tagline">Сверхзвуковая свобода</span>
+                </div>
             </div>
-            <i class="fa-solid fa-chevron-right" style="color: var(--text-secondary); font-size: 12px;"></i>
-        </div>
-        <div class="list-item" onclick="openFeature('Измерить скорость')">
-            <div class="list-item-left">
-                <div class="icon-box" style="color: #10b981;"><i class="fa-solid fa-gauge-high"></i></div>
-                Измерить скорость
+            <div id="statusBadge" class="status-badge">
+                <span class="status-dot"></span>
+                <span class="status-text">Загрузка...</span>
             </div>
-            <i class="fa-solid fa-chevron-right" style="color: var(--text-secondary); font-size: 12px;"></i>
-        </div>
-    </section>
+        </header>
 
-    <div class="footer-menu">
-        <button class="btn btn-secondary" onclick="openFeature('Бонусы')">
-            <i class="fa-solid fa-gift"></i> Бонусы
-        </button>
-        <button class="btn btn-secondary" onclick="openHelp()">
-            <i class="fa-solid fa-circle-info"></i> Помощь
-        </button>
+        <!-- User Card -->
+        <section class="user-card">
+            <div class="user-avatar" id="userAvatar">
+                <span id="avatarLetter">?</span>
+            </div>
+            <div class="user-info">
+                <span class="user-name" id="userName">Загрузка...</span>
+                <span class="user-sub" id="userSub">Проверяем подписку...</span>
+            </div>
+        </section>
+
+        <!-- Stats Grid -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-content">
+                    <span class="stat-label">Действует до</span>
+                    <span class="stat-value" id="expiryDate">—</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-content">
+                    <span class="stat-label">Осталось</span>
+                    <span class="stat-value" id="daysLeft">—</span>
+                </div>
+            </div>
+            <div class="stat-card wide">
+                <div class="stat-icon">📊</div>
+                <div class="stat-content">
+                    <span class="stat-label">Трафик</span>
+                    <div class="traffic-bar">
+                        <div class="traffic-fill" id="trafficFill"></div>
+                    </div>
+                    <span class="stat-value small" id="trafficText">—</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Actions -->
+        <section class="actions">
+            <button class="btn btn-primary" id="connectBtn" onclick="showKey()">
+                <span class="btn-icon">🔑</span>
+                <span class="btn-text">Получить ключ</span>
+            </button>
+            <button class="btn btn-secondary" onclick="openBot()">
+                <span class="btn-icon">🛒</span>
+                <span class="btn-text">Тарифы</span>
+            </button>
+        </section>
+
+        <!-- Quick Links -->
+        <section class="quick-links">
+            <div class="link-item" onclick="openHelp()">
+                <span class="link-icon">📱</span>
+                <span class="link-text">Как подключить</span>
+                <span class="link-arrow">›</span>
+            </div>
+            <div class="link-item" onclick="openSupport()">
+                <span class="link-icon">💬</span>
+                <span class="link-text">Поддержка</span>
+                <span class="link-arrow">›</span>
+            </div>
+            <div class="link-item" onclick="openChannel()">
+                <span class="link-icon">📢</span>
+                <span class="link-text">Наш канал</span>
+                <span class="link-arrow">›</span>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <span>Mach Net © 2024</span>
+        </footer>
     </div>
 
-    <div id="keyModal" class="modal-overlay">
+    <!-- Key Modal -->
+    <div id="keyModal" class="modal">
+        <div class="modal-backdrop" onclick="closeModal()"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Твой ключ доступа</h3>
-                <button class="close-btn" onclick="closeModal()">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                <h3>🔑 Ключ доступа</h3>
+                <button class="modal-close" onclick="closeModal()">✕</button>
             </div>
-            
-            <p class="modal-desc">Скопируй этот ключ и вставь его в приложение V2RayNG (Android) или V2Box (iOS).</p>
-            
-            <div class="key-container">
-                <input type="text" id="vpnKeyInput" readonly value="Загрузка ключа...">
-                <button class="copy-btn" onclick="copyKey()">
-                    <i class="fa-regular fa-copy"></i>
-                </button>
+            <div class="modal-body">
+                <p class="modal-desc">Скопируй ключ и вставь в приложение V2RayNG (Android) или Streisand (iOS)</p>
+                <div class="key-box">
+                    <input type="text" id="keyInput" readonly>
+                    <button class="copy-btn" onclick="copyKey()">
+                        <span id="copyIcon">📋</span>
+                    </button>
+                </div>
             </div>
-
-            <button class="btn btn-primary" onclick="closeModal()" style="margin-top: 15px;">
-                Отлично, закрыть
-            </button>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeModal()">Готово</button>
+            </div>
         </div>
     </div>
 
     <script src="script.js"></script>
-
 </body>
 </html>
