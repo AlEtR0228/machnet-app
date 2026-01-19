@@ -4,133 +4,242 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mach Net</title>
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+        :root{--bg:#0c1220;--card:#151d2e;--accent:#00d4ff;--accent2:#7c3aed;--success:#22c55e;--danger:#ef4444;--text:#fff;--muted:#64748b;--border:rgba(255,255,255,0.08)}
+        body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+        body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 30% 20%,rgba(0,212,255,0.08) 0%,transparent 40%),radial-gradient(circle at 70% 80%,rgba(124,58,237,0.06) 0%,transparent 40%);pointer-events:none}
+        .app{position:relative;z-index:1;max-width:500px;margin:0 auto;padding:16px;padding-bottom:100px}
+        .header{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+        .logo{width:52px;height:52px;background:linear-gradient(135deg,#00d4ff,#7c3aed);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 8px 32px rgba(0,212,255,0.3)}
+        .header-title{font-size:20px;font-weight:800}
+        .header-title span{background:linear-gradient(90deg,#00d4ff,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .badge{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700}
+        .badge.active{background:rgba(34,197,94,0.2);color:#22c55e}
+        .badge.expired{background:rgba(239,68,68,0.2);color:#ef4444}
+        .badge.loading{background:rgba(148,163,184,0.2);color:#94a3b8}
+        .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+        .card{background:var(--card);border-radius:16px;padding:16px;border:1px solid var(--border)}
+        .card-label{font-size:12px;color:var(--muted);margin-bottom:4px}
+        .card-value{font-size:18px;font-weight:700}
+        .btns{display:flex;flex-direction:column;gap:12px;margin-bottom:24px}
+        .btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 24px;border-radius:14px;border:none;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.2s}
+        .btn:active{transform:scale(0.98)}
+        .btn:disabled{opacity:0.5;cursor:not-allowed}
+        .btn-primary{background:linear-gradient(135deg,#00d4ff,#00b4d8);color:#0c1220;box-shadow:0 8px 32px rgba(0,212,255,0.3)}
+        .btn-secondary{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;box-shadow:0 8px 32px rgba(124,58,237,0.3)}
+        .tabs{display:flex;gap:8px;margin-bottom:20px}
+        .tab{flex:1;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
+        .tab.active{background:linear-gradient(135deg,rgba(0,212,255,0.2),rgba(124,58,237,0.2));border-color:var(--accent)}
+        .section-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;padding-left:4px}
+        .menu{background:var(--card);border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:20px}
+        .menu-item{display:flex;align-items:center;gap:14px;padding:16px;cursor:pointer;transition:background 0.2s;border-bottom:1px solid var(--border)}
+        .menu-item:last-child{border-bottom:none}
+        .menu-item:hover{background:rgba(255,255,255,0.02)}
+        .menu-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(255,255,255,0.05)}
+        .menu-text{flex:1}
+        .menu-label{font-size:15px;font-weight:600}
+        .menu-desc{font-size:12px;color:var(--muted)}
+        .menu-arrow{color:var(--muted);font-size:18px}
+        .server{display:flex;align-items:center;gap:14px;padding:16px}
+        .server-flag{font-size:32px}
+        .server-info{flex:1}
+        .server-name{font-size:15px;font-weight:700}
+        .server-loc{font-size:12px;color:var(--muted)}
+        .server-status{width:10px;height:10px;border-radius:50%;background:var(--success);box-shadow:0 0 8px var(--success)}
+        .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);z-index:1000;display:flex;align-items:flex-end;justify-content:center;opacity:0;visibility:hidden;transition:all 0.3s}
+        .modal-bg.active{opacity:1;visibility:visible}
+        .modal{width:100%;max-width:500px;max-height:90vh;background:var(--card);border-radius:24px 24px 0 0;transform:translateY(100%);transition:transform 0.3s;overflow:hidden}
+        .modal-bg.active .modal{transform:translateY(0)}
+        .modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px;border-bottom:1px solid var(--border)}
+        .modal-title{font-size:18px;font-weight:700}
+        .modal-close{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.1);border:none;color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+        .modal-body{padding:20px;overflow-y:auto;max-height:calc(90vh - 140px)}
+        .modal-foot{padding:16px 20px;border-top:1px solid var(--border);display:flex;gap:12px}
+        .modal-foot .btn{flex:1}
+        .dev-tabs{display:flex;gap:4px;background:var(--bg);padding:4px;border-radius:12px;margin-bottom:20px}
+        .dev-tab{flex:1;padding:10px;border-radius:10px;border:none;background:transparent;color:var(--muted);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+        .dev-tab.active{background:var(--accent);color:var(--bg)}
+        .dots{display:flex;gap:8px;margin-bottom:20px}
+        .dot{width:8px;height:8px;border-radius:50%;background:var(--border)}
+        .dot.active{background:var(--accent);width:24px;border-radius:4px}
+        .dot.done{background:var(--success)}
+        .step{display:none}
+        .step.active{display:block}
+        .step-title{font-size:16px;font-weight:700;margin-bottom:12px;padding:12px 16px;background:rgba(0,212,255,0.1);border-left:3px solid var(--accent);border-radius:0 12px 12px 0}
+        .step-desc{font-size:14px;color:#94a3b8;line-height:1.6;margin-bottom:16px}
+        .step-desc b{color:var(--text)}
+        .step-desc .hl{color:var(--accent)}
+        .app-btns{display:flex;gap:12px;margin-bottom:16px}
+        .app-btn{flex:1;padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
+        .app-btn:hover{border-color:var(--accent)}
+        .app-btn.active{border-color:var(--accent);background:rgba(0,212,255,0.1)}
+        .dl-links{display:flex;flex-direction:column;gap:8px}
+        .dl-link{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--bg);border:1px solid var(--border);border-radius:12px;color:var(--text);text-decoration:none;font-size:14px;font-weight:600}
+        .dl-link:hover{border-color:var(--accent)}
+        .dl-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
+        .dl-icon.android{background:rgba(61,220,132,0.2)}
+        .dl-icon.ios{background:rgba(0,122,255,0.2)}
+        .dl-icon.pc{background:rgba(124,58,237,0.2)}
+        .action{width:100%;padding:16px;border-radius:14px;border:none;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px}
+        .action:active{transform:scale(0.98)}
+        .action.primary{background:linear-gradient(135deg,#00d4ff,#00b4d8);color:var(--bg)}
+        .action.secondary{background:var(--bg);border:1px solid var(--border);color:var(--text)}
+        .qr-wrap{text-align:center;padding:20px;background:#fff;border-radius:16px;margin-top:16px}
+        .qr-hint{font-size:13px;color:var(--muted);margin-top:16px}
+        .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#fff;color:var(--bg);padding:14px 24px;border-radius:14px;font-size:14px;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,0.3);z-index:2000;animation:toastIn 0.3s ease}
+        @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+    </style>
 </head>
 <body>
-    <div class="app">
-        <header class="header">
-            <div class="logo">
-                <div class="logo-icon">✈️</div>
-                <div class="logo-text">
-                    <span class="brand">MACH NET</span>
-                    <span class="tagline">Сверхзвуковая свобода</span>
-                </div>
-            </div>
-            <div id="statusBadge" class="status-badge">
-                <span class="status-dot"></span>
-                <span class="status-text">Загрузка...</span>
-            </div>
-        </header>
-
-        <section class="user-card">
-            <div class="user-avatar" id="userAvatar">
-                <span id="avatarLetter">?</span>
-            </div>
-            <div class="user-info">
-                <span class="user-name" id="userName">Загрузка...</span>
-                <span class="user-sub" id="userSub">Проверяем подписку...</span>
-            </div>
-        </section>
-
-        <section class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">📅</div>
-                <div class="stat-content">
-                    <span class="stat-label">Действует до</span>
-                    <span class="stat-value" id="expiryDate">—</span>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">⏳</div>
-                <div class="stat-content">
-                    <span class="stat-label">Осталось</span>
-                    <span class="stat-value" id="daysLeft">—</span>
-                </div>
-            </div>
-            <div class="stat-card wide">
-                <div class="stat-icon">📊</div>
-                <div class="stat-content">
-                    <span class="stat-label">Трафик</span>
-                    <div class="traffic-bar">
-                        <div class="traffic-fill" id="trafficFill"></div>
-                    </div>
-                    <span class="stat-value small" id="trafficText">—</span>
-                </div>
-            </div>
-        </section>
-
-        <section class="actions">
-            <button class="btn btn-primary" id="connectBtn" onclick="smartConnect()">
-                <span class="btn-icon">🔑</span>
-                <span class="btn-text">Подключиться</span>
-            </button>
-            <p class="btn-hint" id="btnHint">Нажми, чтобы открыть приложение автоматически</p>
-            <button class="btn btn-secondary" onclick="openBot()">
-                <span class="btn-icon">🛒</span>
-                <span class="btn-text">Тарифы</span>
-            </button>
-        </section>
-
-        <section class="quick-links">
-            <div class="link-item" onclick="openHelp()">
-                <span class="link-icon">📱</span>
-                <span class="link-text">Как подключить</span>
-                <span class="link-arrow">›</span>
-            </div>
-            <div class="link-item" onclick="openSupport()">
-                <span class="link-icon">💬</span>
-                <span class="link-text">Поддержка</span>
-                <span class="link-arrow">›</span>
-            </div>
-            <div class="link-item" onclick="openChannel()">
-                <span class="link-icon">📢</span>
-                <span class="link-text">Наш канал</span>
-                <span class="link-arrow">›</span>
-            </div>
-        </section>
-
-        <footer class="footer">
-            <span>Mach Net © 2024</span>
-        </footer>
+<div class="app">
+    <div class="header">
+        <div class="logo">✈️</div>
+        <div style="flex:1"><div class="header-title"><span>Mach Net</span></div></div>
+        <div class="badge loading" id="badge">Загрузка</div>
     </div>
-
-    <div id="keyModal" class="modal">
-        <div class="modal-backdrop" onclick="closeModal()"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>🔑 Ключ доступа</h3>
-                <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="grid">
+        <div class="card"><div class="card-label">👤 Пользователь</div><div class="card-value" id="userName">—</div></div>
+        <div class="card"><div class="card-label">📱 Устройств</div><div class="card-value" id="devices">—</div></div>
+        <div class="card"><div class="card-label">📅 Действует до</div><div class="card-value" id="expiry">—</div></div>
+        <div class="card"><div class="card-label">⏳ Осталось</div><div class="card-value" id="days">—</div></div>
+    </div>
+    <div class="btns">
+        <button class="btn btn-primary" id="connectBtn" onclick="openModal()">🚀 Подключиться</button>
+        <button class="btn btn-secondary" onclick="openBot()">💳 Продлить подписку</button>
+    </div>
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab(this,'bonuses')">Бонусы</button>
+        <button class="tab" onclick="switchTab(this,'help')">Помощь</button>
+    </div>
+    <div id="tab-bonuses">
+        <div class="section-title">Ручная настройка</div>
+        <div class="menu">
+            <div class="menu-item" onclick="copyUrl()">
+                <div class="menu-icon">🔗</div>
+                <div class="menu-text"><div class="menu-label">Универсальная ссылка</div><div class="menu-desc">Скопировать subscription URL</div></div>
+                <div class="menu-arrow">›</div>
             </div>
-            <div class="modal-body">
-                <p class="modal-desc">Скопируй ключ и вставь в приложение</p>
-                
-                <div class="app-buttons" id="appButtons">
-                    <button class="app-btn android" onclick="openAndroidApp()">
-                        <span class="app-icon">🤖</span>
-                        <span class="app-name">Happ</span>
-                    </button>
-                    <button class="app-btn ios" onclick="openIOSApp()">
-                        <span class="app-icon">🍎</span>
-                        <span class="app-name">Streisand</span>
-                    </button>
-                </div>
-                
-                <div class="key-box">
-                    <input type="text" id="keyInput" readonly>
-                    <button class="copy-btn" onclick="copyKey()">
-                        <span id="copyIcon">📋</span>
-                    </button>
-                </div>
-                
-                <p class="modal-hint" id="modalHint"></p>
+        </div>
+        <div class="section-title">Обратная связь</div>
+        <div class="menu">
+            <div class="menu-item" onclick="openSupport()">
+                <div class="menu-icon">💬</div>
+                <div class="menu-text"><div class="menu-label">Связаться с поддержкой</div></div>
+                <div class="menu-arrow">›</div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" onclick="closeModal()">Готово</button>
+        </div>
+        <div class="section-title">Сервера</div>
+        <div class="menu">
+            <div class="server">
+                <div class="server-flag">🇸🇪</div>
+                <div class="server-info"><div class="server-name">Sweden</div><div class="server-loc">Stockholm</div></div>
+                <div class="server-status"></div>
             </div>
         </div>
     </div>
+    <div id="tab-help" style="display:none">
+        <div class="section-title">Помощь</div>
+        <div class="menu">
+            <div class="menu-item" onclick="openModal()"><div class="menu-icon">📱</div><div class="menu-text"><div class="menu-label">Как подключиться</div></div><div class="menu-arrow">›</div></div>
+            <div class="menu-item" onclick="openChannel()"><div class="menu-icon">📢</div><div class="menu-text"><div class="menu-label">Наш канал</div></div><div class="menu-arrow">›</div></div>
+            <div class="menu-item" onclick="openSupport()"><div class="menu-icon">❓</div><div class="menu-text"><div class="menu-label">FAQ</div></div><div class="menu-arrow">›</div></div>
+        </div>
+    </div>
+</div>
 
-    <script src="script.js"></script>
+<div class="modal-bg" id="modal">
+    <div class="modal">
+        <div class="modal-head">
+            <div class="modal-title">Подключение</div>
+            <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="dev-tabs">
+                <button class="dev-tab active" onclick="switchDevice('phone',this)">📱 Телефон</button>
+                <button class="dev-tab" onclick="switchDevice('pc',this)">💻 ПК</button>
+            </div>
+            <div class="dots"><div class="dot active" id="d1"></div><div class="dot" id="d2"></div></div>
+            <div class="step active" id="s1">
+                <div class="step-title">1. Установите приложение</div>
+                <p class="step-desc">Скачайте и установите <b>VPN-клиент</b> на ваше устройство. После этого вернитесь сюда для <b>добавления подписки</b>.</p>
+                <div class="app-btns" id="appBtns"><button class="app-btn active" onclick="selApp('happ',this)">Happ</button><button class="app-btn" onclick="selApp('v2ray',this)">V2RayTun</button></div>
+                <div class="dl-links" id="phoneLinks">
+                    <a href="https://apps.apple.com/app/id6504287215" target="_blank" class="dl-link"><div class="dl-icon ios">🍎</div><span>Happ для iPhone (RU)</span><span class="menu-arrow">›</span></a>
+                    <a href="https://apps.apple.com/app/id6478308536" target="_blank" class="dl-link"><div class="dl-icon ios">🍎</div><span>Happ для iPhone (EN)</span><span class="menu-arrow">›</span></a>
+                    <a href="https://play.google.com/store/apps/details?id=com.happproxy.app" target="_blank" class="dl-link"><div class="dl-icon android">🤖</div><span>Happ для Android</span><span class="menu-arrow">›</span></a>
+                </div>
+                <div class="dl-links" id="pcLinks" style="display:none">
+                    <a href="https://github.com/hiddify/hiddify-next/releases" target="_blank" class="dl-link"><div class="dl-icon pc">💻</div><span>Hiddify (Win/Mac/Linux)</span><span class="menu-arrow">›</span></a>
+                    <a href="https://github.com/2dust/v2rayN/releases" target="_blank" class="dl-link"><div class="dl-icon pc">💻</div><span>v2rayN (Windows)</span><span class="menu-arrow">›</span></a>
+                </div>
+            </div>
+            <div class="step" id="s2">
+                <div class="step-title">2. Добавьте подписку</div>
+                <p class="step-desc">Выберите <span class="hl">"Авто-настройка"</span>, если это не сработает, <span class="hl">скопируйте ссылку</span> на подписку вручную и добавьте в приложение нажав на <b>+</b>.</p>
+                <button class="action primary" onclick="autoSetup()">🚀 Авто-настройка Happ</button>
+                <button class="action secondary" onclick="copyUrl()">📋 Копировать ссылку</button>
+                <p class="qr-hint">Или отсканируйте QR-код в приложении.</p>
+                <div class="qr-wrap" id="qr"></div>
+            </div>
+        </div>
+        <div class="modal-foot">
+            <button class="btn" style="background:var(--bg);color:var(--text)" id="backBtn" onclick="prev()" style="display:none">Назад</button>
+            <button class="btn btn-primary" id="nextBtn" onclick="next()">Далее</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const tg=window.Telegram.WebApp;tg.ready();tg.expand();
+const API="https://machnetbot-production.up.railway.app/api/user";
+const PANEL="https://my-net.fun:8443";
+const user=tg.initDataUnsafe.user;
+let subUrl="",step=1,app="happ",dev="phone";
+
+async function load(){
+    if(!user){document.getElementById('userName').textContent="Гость";setBadge('expired','Нет данных');return}
+    document.getElementById('userName').textContent=user.first_name||user.username||"User";
+    try{
+        const r=await fetch(`${API}/${user.id}`);
+        if(!r.ok)throw new Error();
+        const d=await r.json();
+        if(d.error)throw new Error();
+        subUrl=d.subscription_url||`${PANEL}/sub/user_${user.id}`;
+        const now=Math.floor(Date.now()/1000);
+        if(d.is_active&&d.expiry>now){
+            const exp=new Date(d.expiry*1000);
+            const date=exp.toLocaleDateString('ru-RU',{day:'numeric',month:'short'});
+            const left=Math.ceil((d.expiry-now)/86400);
+            setBadge('active','Активна');
+            document.getElementById('expiry').textContent=date;
+            document.getElementById('days').textContent=left+' дн.';
+            document.getElementById('devices').textContent=d.ip_limit||'3';
+            document.getElementById('connectBtn').disabled=false;
+        }else{setBadge('expired','Истекла');document.getElementById('connectBtn').disabled=true}
+    }catch(e){setBadge('expired','Ошибка')}
+}
+
+function setBadge(t,txt){const b=document.getElementById('badge');b.className='badge '+t;b.textContent=txt}
+function switchTab(btn,id){document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('tab-bonuses').style.display=id==='bonuses'?'block':'none';document.getElementById('tab-help').style.display=id==='help'?'block':'none'}
+function openModal(){if(tg.HapticFeedback)tg.HapticFeedback.impactOccurred('medium');document.getElementById('modal').classList.add('active');step=1;updateStep();genQR()}
+function closeModal(){document.getElementById('modal').classList.remove('active')}
+function switchDevice(d,btn){dev=d;document.querySelectorAll('.dev-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('phoneLinks').style.display=d==='phone'?'flex':'none';document.getElementById('appBtns').style.display=d==='phone'?'flex':'none';document.getElementById('pcLinks').style.display=d==='pc'?'flex':'none'}
+function selApp(a,btn){app=a;document.querySelectorAll('.app-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
+function next(){if(step<2){step++;updateStep()}else closeModal()}
+function prev(){if(step>1){step--;updateStep()}}
+function updateStep(){document.getElementById('s1').classList.toggle('active',step===1);document.getElementById('s2').classList.toggle('active',step===2);document.getElementById('d1').className=step===1?'dot active':'dot done';document.getElementById('d2').className=step===2?'dot active':'dot';document.getElementById('backBtn').style.display=step>1?'block':'none';document.getElementById('nextBtn').textContent=step===2?'Готово':'Далее'}
+function autoSetup(){if(tg.HapticFeedback)tg.HapticFeedback.impactOccurred('medium');navigator.clipboard.writeText(subUrl).catch(()=>{});const url=`happ://add/${encodeURIComponent(subUrl)}`;window.location.href=url;setTimeout(()=>toast('Ссылка скопирована! Откройте Happ'),1500)}
+function copyUrl(){if(tg.HapticFeedback)tg.HapticFeedback.notificationOccurred('success');navigator.clipboard.writeText(subUrl).then(()=>toast('Ссылка скопирована!')).catch(()=>{const i=document.createElement('input');i.value=subUrl;document.body.appendChild(i);i.select();document.execCommand('copy');document.body.removeChild(i);toast('Ссылка скопирована!')})}
+function genQR(){const c=document.getElementById('qr');c.innerHTML='';if(subUrl)QRCode.toCanvas(subUrl,{width:180,margin:2,color:{dark:'#0c1220',light:'#ffffff'}},(e,cv)=>{if(!e)c.appendChild(cv)})}
+function openBot(){if(tg.HapticFeedback)tg.HapticFeedback.selectionChanged();tg.close()}
+function openSupport(){if(tg.HapticFeedback)tg.HapticFeedback.selectionChanged();tg.openTelegramLink('https://t.me/machnet')}
+function openChannel(){if(tg.HapticFeedback)tg.HapticFeedback.selectionChanged();tg.openTelegramLink('https://t.me/machnet_blog')}
+function toast(msg){const old=document.querySelector('.toast');if(old)old.remove();const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300)},2500)}
+load();
+</script>
 </body>
 </html>
