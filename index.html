@@ -9,7 +9,6 @@
 </head>
 <body>
     <div class="app">
-        <!-- Header -->
         <header class="header">
             <div class="logo">
                 <div class="logo-icon">✈️</div>
@@ -24,7 +23,6 @@
             </div>
         </header>
 
-        <!-- User Card -->
         <section class="user-card">
             <div class="user-avatar" id="userAvatar">
                 <span id="avatarLetter">?</span>
@@ -35,7 +33,6 @@
             </div>
         </section>
 
-        <!-- Stats Grid -->
         <section class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon">📅</div>
@@ -63,19 +60,18 @@
             </div>
         </section>
 
-        <!-- Actions -->
         <section class="actions">
-            <button class="btn btn-primary" id="connectBtn" onclick="showKey()">
+            <button class="btn btn-primary" id="connectBtn" onclick="smartConnect()">
                 <span class="btn-icon">🔑</span>
-                <span class="btn-text">Получить ключ</span>
+                <span class="btn-text">Подключиться</span>
             </button>
+            <p class="btn-hint" id="btnHint">Нажми, чтобы открыть приложение автоматически</p>
             <button class="btn btn-secondary" onclick="openBot()">
                 <span class="btn-icon">🛒</span>
                 <span class="btn-text">Тарифы</span>
             </button>
         </section>
 
-        <!-- Quick Links -->
         <section class="quick-links">
             <div class="link-item" onclick="openHelp()">
                 <span class="link-icon">📱</span>
@@ -94,13 +90,11 @@
             </div>
         </section>
 
-        <!-- Footer -->
         <footer class="footer">
             <span>Mach Net © 2024</span>
         </footer>
     </div>
 
-    <!-- Key Modal -->
     <div id="keyModal" class="modal">
         <div class="modal-backdrop" onclick="closeModal()"></div>
         <div class="modal-content">
@@ -109,13 +103,27 @@
                 <button class="modal-close" onclick="closeModal()">✕</button>
             </div>
             <div class="modal-body">
-                <p class="modal-desc">Скопируй ключ и вставь в приложение V2RayNG (Android) или Streisand (iOS)</p>
+                <p class="modal-desc">Скопируй ключ и вставь в приложение</p>
+                
+                <div class="app-buttons" id="appButtons">
+                    <button class="app-btn android" onclick="openAndroidApp()">
+                        <span class="app-icon">🤖</span>
+                        <span class="app-name">Happ</span>
+                    </button>
+                    <button class="app-btn ios" onclick="openIOSApp()">
+                        <span class="app-icon">🍎</span>
+                        <span class="app-name">Streisand</span>
+                    </button>
+                </div>
+                
                 <div class="key-box">
                     <input type="text" id="keyInput" readonly>
                     <button class="copy-btn" onclick="copyKey()">
                         <span id="copyIcon">📋</span>
                     </button>
                 </div>
+                
+                <p class="modal-hint" id="modalHint"></p>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" onclick="closeModal()">Готово</button>
