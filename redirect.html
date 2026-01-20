@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MACH NET — Подключение</title>
+    
+    <!-- Open Graph для красивого превью -->
+    <meta property="og:title" content="MACH NET — Сверхзвуковая свобода">
+    <meta property="og:description" content="Нажмите, чтобы добавить подписку">
+    <meta property="og:type" content="website">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            padding: 24px;
+            background: linear-gradient(135deg, #0c1220 0%, #1a1f2e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 30% 20%, rgba(0, 212, 255, 0.08) 0%, transparent 40%),
+                        radial-gradient(circle at 70% 80%, rgba(124, 58, 237, 0.06) 0%, transparent 40%);
+            pointer-events: none;
+        }
+        
+        .container {
+            position: relative;
+            max-width: 500px;
+            width: 100%;
+            background: rgba(26, 31, 46, 0.95);
+            border-radius: 24px;
+            padding: 48px 32px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+        }
+        
+        .icon {
+            font-size: 72px;
+            margin-bottom: 24px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.15);
+                opacity: 0.8;
+            }
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(90deg, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .loading-text {
+            color: #94a3b8;
+            font-size: 16px;
+            margin-bottom: 40px;
+        }
+        
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(0, 212, 255, 0.1);
+            border-top-color: #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 32px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 32px;
+        }
+        
+        .btn {
+            padding: 16px 28px;
+            border-radius: 14px;
+            border: none;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #00b4d8);
+            color: #0c1220;
+            box-shadow: 0 8px 32px rgba(0, 212, 255, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 212, 255, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .note {
+            margin-top: 32px;
+            padding: 20px;
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 16px;
+            border-left: 4px solid #fbbf24;
+        }
+        
+        .note-icon {
+            color: #fbbf24;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .note-text {
+            color: #fbbf24;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .note-link {
+            color: #00d4ff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .note-link:hover {
+            text-decoration: underline;
+        }
+        
+        .copy-success {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #22c55e;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            box-shadow: 0 8px 24px rgba(34, 197, 94, 0.3);
+        }
+        
+        .copy-success.show {
+            opacity: 1;
+        }
+        
+        .manual-instruction {
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: left;
+        }
+        
+        .manual-title {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .manual-steps {
+            list-style: none;
+        }
+        
+        .manual-steps li {
+            color: #94a3b8;
+            font-size: 14px;
+            line-height: 1.8;
+            padding-left: 28px;
+            position: relative;
+            margin-bottom: 8px;
+        }
+        
+        .manual-steps li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #00d4ff;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🚀</div>
+        <h1>Открываем приложение</h1>
+        <p class="loading-text">Подождите несколько секунд...</p>
+        
+        <div class="spinner"></div>
+        
+        <div class="buttons">
+            <a href="#" class="btn btn-primary" id="openBtn">Открыть в Happ</a>
+            <button class="btn btn-secondary" id="copyBtn">📋 Скопировать ссылку</button>
+        </div>
+        
+        <div class="note">
+            <div class="note-icon">⚠️</div>
+            <div class="note-text">
+                Если приложение не открылось автоматически, нажмите кнопку выше 
+                или обратитесь в <a href="https://t.me/machnet" class="note-link" target="_blank">поддержку</a>.
+            </div>
+        </div>
+        
+        <div class="manual-instruction">
+            <div class="manual-title">📱 Ручное подключение:</div>
+            <ul class="manual-steps">
+                <li>Скопируйте ссылку кнопкой выше</li>
+                <li>Откройте приложение Happ</li>
+                <li>Нажмите «+» для добавления подписки</li>
+                <li>Вставьте скопированную ссылку</li>
+                <li>Готово! Включайте VPN</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="copy-success" id="copySuccess">✅ Ссылка скопирована!</div>
+    
+    <script>
+        // Получаем subscription URL из параметра ?url=...
+        const urlParams = new URLSearchParams(window.location.search);
+        const encodedUrl = urlParams.get('url');
+        
+        if (!encodedUrl) {
+            alert('❌ Ошибка: не передана ссылка подписки');
+            window.location.href = 'https://t.me/machnet_bot';
+        }
+        
+        // Декодируем URL
+        const subUrl = decodeURIComponent(encodedUrl);
+        
+        // Формируем deep link для Happ
+        const deepLink = `happ://add/${encodedUrl}`;
+        
+        // Устанавливаем ссылку на кнопку
+        document.getElementById('openBtn').href = deepLink;
+        
+        // Автоматическое открытие через 500ms
+        window.onload = function() {
+            setTimeout(() => {
+                window.location.href = deepLink;
+            }, 500);
+        };
+        
+        // Копирование ссылки
+        document.getElementById('copyBtn').addEventListener('click', function() {
+            copyToClipboard(subUrl);
+        });
+        
+        function copyToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showCopySuccess();
+                }).catch(() => {
+                    fallbackCopy(text);
+                });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+        
+        function fallbackCopy(text) {
+            const input = document.createElement('input');
+            input.value = text;
+            input.style.position = 'fixed';
+            input.style.left = '-9999px';
+            document.body.appendChild(input);
+            input.select();
+            
+            try {
+                document.execCommand('copy');
+                showCopySuccess();
+            } catch (err) {
+                alert('Не удалось скопировать ссылку. Попробуйте вручную.');
+            }
+            
+            document.body.removeChild(input);
+        }
+        
+        function showCopySuccess() {
+            const successMsg = document.getElementById('copySuccess');
+            successMsg.classList.add('show');
+            
+            setTimeout(() => {
+                successMsg.classList.remove('show');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
