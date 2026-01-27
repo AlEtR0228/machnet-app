@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MACH NET — Подключение</title>
-    
-    <!-- Open Graph для красивого превью -->
-    <meta property="og:title" content="MACH NET — Сверхзвуковая свобода">
+    <meta property="og:title" content="MACH NET — Подключение">
     <meta property="og:description" content="Нажмите, чтобы добавить подписку">
-    <meta property="og:type" content="website">
     
     <style>
         * {
@@ -37,7 +34,7 @@
             pointer-events: none;
         }
         
-        .container {
+        .card {
             position: relative;
             max-width: 500px;
             width: 100%;
@@ -76,34 +73,15 @@
             -webkit-text-fill-color: transparent;
         }
         
-        .loading-text {
+        p {
             color: #94a3b8;
             font-size: 16px;
-            margin-bottom: 40px;
-        }
-        
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 4px solid rgba(0, 212, 255, 0.1);
-            border-top-color: #00d4ff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 32px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 32px;
+            margin-bottom: 30px;
         }
         
         .btn {
+            display: block;
+            width: 100%;
             padding: 16px 28px;
             border-radius: 14px;
             border: none;
@@ -113,28 +91,41 @@
             cursor: pointer;
             transition: all 0.3s;
             text-decoration: none;
-            display: inline-block;
+            margin-bottom: 12px;
         }
         
-        .btn-primary {
+        #deepLinkBtn {
             background: linear-gradient(135deg, #00d4ff, #00b4d8);
             color: #0c1220;
             box-shadow: 0 8px 32px rgba(0, 212, 255, 0.3);
         }
         
-        .btn-primary:hover {
+        #deepLinkBtn:hover {
             transform: translateY(-2px);
             box-shadow: 0 12px 40px rgba(0, 212, 255, 0.4);
         }
         
-        .btn-secondary {
+        button.btn {
             background: rgba(255, 255, 255, 0.1);
             color: #fff;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
-        .btn-secondary:hover {
+        button.btn:hover {
             background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .manual-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 12px;
+            font-size: 12px;
+            color: #64748b;
+            word-break: break-all;
+            user-select: all;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .note {
@@ -144,12 +135,6 @@
             border: 1px solid rgba(251, 191, 36, 0.3);
             border-radius: 16px;
             border-left: 4px solid #fbbf24;
-        }
-        
-        .note-icon {
-            color: #fbbf24;
-            font-size: 24px;
-            margin-bottom: 8px;
         }
         
         .note-text {
@@ -162,30 +147,6 @@
             color: #00d4ff;
             text-decoration: none;
             font-weight: 600;
-        }
-        
-        .note-link:hover {
-            text-decoration: underline;
-        }
-        
-        .copy-success {
-            position: fixed;
-            bottom: 32px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #22c55e;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-            box-shadow: 0 8px 24px rgba(34, 197, 94, 0.3);
-        }
-        
-        .copy-success.show {
-            opacity: 1;
         }
         
         .manual-instruction {
@@ -225,20 +186,19 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="card">
         <div class="icon">🚀</div>
         <h1>Открываем приложение</h1>
-        <p class="loading-text">Подождите несколько секунд...</p>
+        <p>Подождите несколько секунд...</p>
         
-        <div class="spinner"></div>
-        
-        <div class="buttons">
-            <a href="#" class="btn btn-primary" id="openBtn">Открыть в Happ</a>
-            <button class="btn btn-secondary" id="copyBtn">📋 Скопировать ссылку</button>
+        <a id="deepLinkBtn" href="#" class="btn">Открыть в Happ</a>
+        <button onclick="copyLink()" class="btn">📋 Скопировать ссылку</button>
+
+        <div class="manual-box" id="displayLink" onclick="copyLink()">
+            Загрузка ссылки...
         </div>
         
         <div class="note">
-            <div class="note-icon">⚠️</div>
             <div class="note-text">
                 Если приложение не открылось автоматически, нажмите кнопку выше 
                 или обратитесь в <a href="https://t.me/machnet" class="note-link" target="_blank">поддержку</a>.
@@ -256,9 +216,7 @@
             </ul>
         </div>
     </div>
-    
-    <div class="copy-success" id="copySuccess">✅ Ссылка скопирована!</div>
-    
+
     <script>
         // Получаем subscription URL из параметра ?url=...
         const urlParams = new URLSearchParams(window.location.search);
@@ -269,14 +227,18 @@
             window.location.href = 'https://t.me/machnet_bot';
         }
         
-        // Декодируем URL
+        // Декодируем URL для отображения пользователю
         const subUrl = decodeURIComponent(encodedUrl);
         
-        // Формируем deep link для Happ
+        // Формируем deep link для Happ (используем ОРИГИНАЛЬНЫЙ encodedUrl!)
         const deepLink = `happ://add/${encodedUrl}`;
         
-        // Устанавливаем ссылку на кнопку
-        document.getElementById('openBtn').href = deepLink;
+        // Устанавливаем элементы
+        const displayLink = document.getElementById('displayLink');
+        const deepLinkBtn = document.getElementById('deepLinkBtn');
+        
+        displayLink.innerText = subUrl;
+        deepLinkBtn.href = deepLink;
         
         // Автоматическое открытие через 500ms
         window.onload = function() {
@@ -285,26 +247,21 @@
             }, 500);
         };
         
-        // Копирование ссылки
-        document.getElementById('copyBtn').addEventListener('click', function() {
-            copyToClipboard(subUrl);
-        });
-        
-        function copyToClipboard(text) {
+        function copyLink() {
             if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(text).then(() => {
-                    showCopySuccess();
+                navigator.clipboard.writeText(subUrl).then(() => {
+                    alert('✅ Ссылка скопирована!');
                 }).catch(() => {
-                    fallbackCopy(text);
+                    fallbackCopy();
                 });
             } else {
-                fallbackCopy(text);
+                fallbackCopy();
             }
         }
         
-        function fallbackCopy(text) {
+        function fallbackCopy() {
             const input = document.createElement('input');
-            input.value = text;
+            input.value = subUrl;
             input.style.position = 'fixed';
             input.style.left = '-9999px';
             document.body.appendChild(input);
@@ -312,21 +269,12 @@
             
             try {
                 document.execCommand('copy');
-                showCopySuccess();
+                alert('✅ Ссылка скопирована!');
             } catch (err) {
-                alert('Не удалось скопировать ссылку. Попробуйте вручную.');
+                alert('Не удалось скопировать ссылку.');
             }
             
             document.body.removeChild(input);
-        }
-        
-        function showCopySuccess() {
-            const successMsg = document.getElementById('copySuccess');
-            successMsg.classList.add('show');
-            
-            setTimeout(() => {
-                successMsg.classList.remove('show');
-            }, 2500);
         }
     </script>
 </body>
