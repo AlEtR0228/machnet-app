@@ -3,278 +3,347 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MACH NET — Подключение</title>
-    <meta property="og:title" content="MACH NET — Подключение">
-    <meta property="og:description" content="Нажмите, чтобы добавить подписку">
+    <title>MACH NET — Подключение VPN</title>
+    
+    <meta property="og:title" content="MACH NET — Сверхзвуковая свобода">
+    <meta property="og:description" content="Нажмите, чтобы добавить VPN подписку">
     
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-            padding: 24px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #0c1220 0%, #1a1f2e 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 20px;
             color: #fff;
         }
         
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle at 30% 20%, rgba(0, 212, 255, 0.08) 0%, transparent 40%),
-                        radial-gradient(circle at 70% 80%, rgba(124, 58, 237, 0.06) 0%, transparent 40%);
-            pointer-events: none;
-        }
-        
-        .card {
-            position: relative;
-            max-width: 500px;
+        .container {
+            max-width: 480px;
             width: 100%;
             background: rgba(26, 31, 46, 0.95);
             border-radius: 24px;
-            padding: 48px 32px;
+            padding: 40px 28px;
             text-align: center;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
         }
         
-        .icon {
-            font-size: 72px;
-            margin-bottom: 24px;
-            animation: pulse 2s ease-in-out infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.15);
-                opacity: 0.8;
-            }
-        }
+        .logo { font-size: 64px; margin-bottom: 20px; }
         
         h1 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 12px;
+            font-size: 24px;
+            margin-bottom: 8px;
             background: linear-gradient(90deg, #00d4ff, #7c3aed);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         
-        p {
+        .subtitle {
             color: #94a3b8;
-            font-size: 16px;
-            margin-bottom: 30px;
+            font-size: 14px;
+            margin-bottom: 32px;
         }
         
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0, 212, 255, 0.2);
+            border-top-color: #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 24px;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .status {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        
+        .buttons { display: flex; flex-direction: column; gap: 12px; }
+        
         .btn {
-            display: block;
-            width: 100%;
-            padding: 16px 28px;
+            padding: 16px 24px;
             border-radius: 14px;
             border: none;
-            font-family: inherit;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             text-decoration: none;
-            margin-bottom: 12px;
+            display: block;
         }
         
-        #deepLinkBtn {
+        .btn-primary {
             background: linear-gradient(135deg, #00d4ff, #00b4d8);
             color: #0c1220;
-            box-shadow: 0 8px 32px rgba(0, 212, 255, 0.3);
         }
         
-        #deepLinkBtn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(0, 212, 255, 0.4);
-        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0, 212, 255, 0.3); }
         
-        button.btn {
+        .btn-secondary {
             background: rgba(255, 255, 255, 0.1);
             color: #fff;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
-        button.btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.15); }
         
-        .manual-box {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(15, 23, 42, 0.8);
-            border-radius: 12px;
-            font-size: 12px;
-            color: #64748b;
-            word-break: break-all;
-            user-select: all;
-            cursor: pointer;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .note {
-            margin-top: 32px;
-            padding: 20px;
-            background: rgba(251, 191, 36, 0.1);
-            border: 1px solid rgba(251, 191, 36, 0.3);
-            border-radius: 16px;
-            border-left: 4px solid #fbbf24;
-        }
-        
-        .note-text {
-            color: #fbbf24;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-        
-        .note-link {
-            color: #00d4ff;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        
-        .manual-instruction {
-            margin-top: 32px;
-            padding-top: 32px;
+        .divider {
+            margin: 28px 0;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+        
+        .divider::after {
+            content: 'Если не открылось автоматически';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(26, 31, 46, 0.95);
+            padding: 0 12px;
+            color: #64748b;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        
+        .manual-guide {
             text-align: left;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 8px;
         }
         
         .manual-title {
-            color: #fff;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             margin-bottom: 12px;
+            color: #fff;
         }
         
-        .manual-steps {
+        .steps {
             list-style: none;
+            counter-reset: step;
         }
         
-        .manual-steps li {
+        .steps li {
+            counter-increment: step;
             color: #94a3b8;
-            font-size: 14px;
-            line-height: 1.8;
+            font-size: 13px;
+            line-height: 1.6;
             padding-left: 28px;
             position: relative;
             margin-bottom: 8px;
         }
         
-        .manual-steps li::before {
-            content: '→';
+        .steps li::before {
+            content: counter(step);
             position: absolute;
             left: 0;
+            width: 20px;
+            height: 20px;
+            background: rgba(0, 212, 255, 0.2);
             color: #00d4ff;
-            font-weight: bold;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sub-url {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 12px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 11px;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .sub-url:hover {
+            border-color: #00d4ff;
+            color: #00d4ff;
+        }
+        
+        .copy-toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #22c55e;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        
+        .copy-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
+        .video-section {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .video-title {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 12px;
+        }
+        
+        .video-placeholder {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 40px 20px;
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            color: #64748b;
+            font-size: 13px;
+        }
+        
+        .video-placeholder a {
+            color: #00d4ff;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div class="icon">🚀</div>
-        <h1>Открываем приложение</h1>
-        <p>Подождите несколько секунд...</p>
+    <div class="container">
+        <div class="logo">🚀</div>
+        <h1>MACH NET</h1>
+        <p class="subtitle">Автоматическое подключение VPN</p>
         
-        <a id="deepLinkBtn" href="#" class="btn">Открыть в Happ</a>
-        <button onclick="copyLink()" class="btn">📋 Скопировать ссылку</button>
-
-        <div class="manual-box" id="displayLink" onclick="copyLink()">
-            Загрузка ссылки...
+        <div class="spinner" id="spinner"></div>
+        <p class="status" id="status">Открываем приложение Happ...</p>
+        
+        <div class="buttons">
+            <a href="#" class="btn btn-primary" id="openBtn">🚀 Открыть в Happ</a>
+            <button class="btn btn-secondary" id="copyBtn">📋 Скопировать ссылку</button>
         </div>
         
-        <div class="note">
-            <div class="note-text">
-                Если приложение не открылось автоматически, нажмите кнопку выше 
-                или обратитесь в <a href="https://t.me/machnet" class="note-link" target="_blank">поддержку</a>.
+        <div class="divider"></div>
+        
+        <div class="manual-guide">
+            <div class="manual-title">📱 Ручное подключение:</div>
+            <ol class="steps">
+                <li>Скопируйте ссылку кнопкой выше</li>
+                <li>Откройте приложение <b>Happ</b></li>
+                <li>Нажмите <b>«+»</b> внизу экрана</li>
+                <li>Выберите <b>«Добавить по ссылке»</b></li>
+                <li>Вставьте ссылку → <b>Готово!</b></li>
+            </ol>
+            
+            <div class="sub-url" id="subUrl" onclick="copyUrl()">
+                Нажмите, чтобы скопировать ссылку...
             </div>
         </div>
         
-        <div class="manual-instruction">
-            <div class="manual-title">📱 Ручное подключение:</div>
-            <ul class="manual-steps">
-                <li>Скопируйте ссылку кнопкой выше</li>
-                <li>Откройте приложение Happ</li>
-                <li>Нажмите «+» для добавления подписки</li>
-                <li>Вставьте скопированную ссылку</li>
-                <li>Готово! Включайте VPN</li>
-            </ul>
+        <!-- VIDEO PLACEHOLDERS - замени URL на свои видео с GitHub -->
+        <div class="video-section" id="videoSection" style="display: none;">
+            <div class="video-title">📹 Видео-инструкция:</div>
+            <div class="video-placeholder" id="videoPlaceholder">
+                <p>🎬 Видео загружается...</p>
+                <p style="margin-top: 8px;">Или смотрите на <a href="#" id="videoLink" target="_blank">GitHub</a></p>
+            </div>
         </div>
     </div>
-
+    
+    <div class="copy-toast" id="toast">✅ Ссылка скопирована!</div>
+    
     <script>
-        // Получаем subscription URL из параметра ?url=...
-        const urlParams = new URLSearchParams(window.location.search);
-        const encodedUrl = urlParams.get('url');
+        // Получаем параметры из URL
+        const params = new URLSearchParams(window.location.search);
+        const subUrl = params.get('url');
+        const device = params.get('device') || 'unknown';
         
-        if (!encodedUrl) {
-            alert('❌ Ошибка: не передана ссылка подписки');
-            window.location.href = 'https://t.me/machnet_bot';
-        }
-        
-        // Декодируем URL для отображения пользователю
-        const subUrl = decodeURIComponent(encodedUrl);
-        
-        // Формируем deep link для Happ (используем ОРИГИНАЛЬНЫЙ encodedUrl!)
-        const deepLink = `happ://add/${encodedUrl}`;
-        
-        // Устанавливаем элементы
-        const displayLink = document.getElementById('displayLink');
-        const deepLinkBtn = document.getElementById('deepLinkBtn');
-        
-        displayLink.innerText = subUrl;
-        deepLinkBtn.href = deepLink;
-        
-        // Автоматическое открытие через 500ms
-        window.onload = function() {
-            setTimeout(() => {
-                window.location.href = deepLink;
-            }, 500);
+        // Видео URL для разных устройств (ЗАМЕНИ НА СВОИ!)
+        const videoUrls = {
+            ios: 'https://github.com/YOUR_REPO/raw/main/videos/ios-guide.mp4',
+            android: 'https://github.com/YOUR_REPO/raw/main/videos/android-guide.mp4',
+            pc: 'https://github.com/YOUR_REPO/raw/main/videos/pc-guide.mp4'
         };
         
-        function copyLink() {
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(subUrl).then(() => {
-                    alert('✅ Ссылка скопирована!');
-                }).catch(() => {
-                    fallbackCopy();
-                });
-            } else {
-                fallbackCopy();
+        if (!subUrl) {
+            document.getElementById('status').textContent = '❌ Ошибка: ссылка не найдена';
+            document.getElementById('spinner').style.display = 'none';
+        } else {
+            // Декодируем URL
+            const decodedUrl = decodeURIComponent(subUrl);
+            
+            // Показываем URL
+            document.getElementById('subUrl').textContent = decodedUrl;
+            
+            // Формируем deep link
+            const encodedForHapp = btoa(decodedUrl);
+            const happDeepLink = `happ://add/${encodedForHapp}`;
+            
+            // Устанавливаем ссылку на кнопку
+            document.getElementById('openBtn').href = happDeepLink;
+            
+            // Автооткрытие через 800ms
+            setTimeout(() => {
+                window.location.href = happDeepLink;
+                
+                // Через 2 секунды меняем статус
+                setTimeout(() => {
+                    document.getElementById('status').textContent = 'Если приложение не открылось — нажмите кнопку выше';
+                    document.getElementById('spinner').style.display = 'none';
+                }, 2000);
+            }, 800);
+            
+            // Показываем видео для устройства
+            if (videoUrls[device]) {
+                document.getElementById('videoSection').style.display = 'block';
+                document.getElementById('videoLink').href = videoUrls[device];
             }
         }
         
-        function fallbackCopy() {
-            const input = document.createElement('input');
-            input.value = subUrl;
-            input.style.position = 'fixed';
-            input.style.left = '-9999px';
-            document.body.appendChild(input);
-            input.select();
+        // Копирование
+        document.getElementById('copyBtn').addEventListener('click', copyUrl);
+        
+        function copyUrl() {
+            const url = document.getElementById('subUrl').textContent;
             
-            try {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(url).then(showToast);
+            } else {
+                // Fallback
+                const input = document.createElement('input');
+                input.value = url;
+                input.style.position = 'fixed';
+                input.style.left = '-9999px';
+                document.body.appendChild(input);
+                input.select();
                 document.execCommand('copy');
-                alert('✅ Ссылка скопирована!');
-            } catch (err) {
-                alert('Не удалось скопировать ссылку.');
+                document.body.removeChild(input);
+                showToast();
             }
-            
-            document.body.removeChild(input);
+        }
+        
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
         }
     </script>
 </body>
