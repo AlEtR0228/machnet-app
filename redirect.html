@@ -199,32 +199,6 @@
             transform: translateX(-50%) translateY(0);
             opacity: 1;
         }
-        
-        .video-section {
-            margin-top: 24px;
-            padding-top: 24px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .video-title {
-            font-size: 14px;
-            color: #94a3b8;
-            margin-bottom: 12px;
-        }
-        
-        .video-placeholder {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            padding: 40px 20px;
-            border: 2px dashed rgba(255, 255, 255, 0.1);
-            color: #64748b;
-            font-size: 13px;
-        }
-        
-        .video-placeholder a {
-            color: #00d4ff;
-            text-decoration: none;
-        }
     </style>
 </head>
 <body>
@@ -258,14 +232,7 @@
             </div>
         </div>
         
-        <!-- VIDEO PLACEHOLDERS - замени URL на свои видео с GitHub -->
-        <div class="video-section" id="videoSection" style="display: none;">
-            <div class="video-title">📹 Видео-инструкция:</div>
-            <div class="video-placeholder" id="videoPlaceholder">
-                <p>🎬 Видео загружается...</p>
-                <p style="margin-top: 8px;">Или смотрите на <a href="#" id="videoLink" target="_blank">GitHub</a></p>
-            </div>
-        </div>
+        <!-- ВИДЕО УБРАНО - теперь отправляется прямо в боте при выборе устройства -->
     </div>
     
     <div class="copy-toast" id="toast">✅ Ссылка скопирована!</div>
@@ -274,14 +241,6 @@
         // Получаем параметры из URL
         const params = new URLSearchParams(window.location.search);
         const encodedUrl = params.get('url');
-        const device = params.get('device') || 'unknown';
-        
-        // Видео URL для разных устройств (ЗАМЕНИ НА СВОИ!)
-        const videoUrls = {
-            ios: 'https://github.com/YOUR_REPO/raw/main/videos/ios-guide.mp4',
-            android: 'https://github.com/YOUR_REPO/raw/main/videos/android-guide.mp4',
-            pc: 'https://github.com/YOUR_REPO/raw/main/videos/pc-guide.mp4'
-        };
         
         if (!encodedUrl) {
             document.getElementById('status').textContent = '❌ Ошибка: ссылка не найдена';
@@ -311,12 +270,6 @@
                     document.getElementById('spinner').style.display = 'none';
                 }, 2000);
             }, 800);
-            
-            // Показываем видео для устройства
-            if (videoUrls[device]) {
-                document.getElementById('videoSection').style.display = 'block';
-                document.getElementById('videoLink').href = videoUrls[device];
-            }
         }
         
         // Копирование
