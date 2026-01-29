@@ -273,7 +273,7 @@
     <script>
         // Получаем параметры из URL
         const params = new URLSearchParams(window.location.search);
-        const subUrl = params.get('url');
+        const encodedUrl = params.get('url');
         const device = params.get('device') || 'unknown';
         
         // Видео URL для разных устройств (ЗАМЕНИ НА СВОИ!)
@@ -283,19 +283,20 @@
             pc: 'https://github.com/YOUR_REPO/raw/main/videos/pc-guide.mp4'
         };
         
-        if (!subUrl) {
+        if (!encodedUrl) {
             document.getElementById('status').textContent = '❌ Ошибка: ссылка не найдена';
             document.getElementById('spinner').style.display = 'none';
         } else {
-            // Декодируем URL
-            const decodedUrl = decodeURIComponent(subUrl);
+            // Декодируем URL (он уже URL-encoded)
+            const subUrl = decodeURIComponent(encodedUrl);
             
             // Показываем URL
-            document.getElementById('subUrl').textContent = decodedUrl;
+            document.getElementById('subUrl').textContent = subUrl;
             
-            // Формируем deep link
-            const encodedForHapp = btoa(decodedUrl);
-            const happDeepLink = `happ://add/${encodedForHapp}`;
+            // Формируем deep link для Happ
+            // Happ ожидает: happ://add/URL_ENCODED_SUBSCRIPTION
+            // НЕ base64, а просто URL-encoded подписку
+            const happDeepLink = `happ://add/${encodedUrl}`;
             
             // Устанавливаем ссылку на кнопку
             document.getElementById('openBtn').href = happDeepLink;
